@@ -1,0 +1,78 @@
+db:
+  path: diun.db
+
+watch:
+  workers: 10
+  schedule: "0 * * * *"
+
+notif:
+  mail:
+    enable: false
+    host: localhost
+    port: 25
+    ssl: false
+    insecure_skip_verify: false
+    username:
+    password:
+    from:
+    to:
+  webhook:
+    enable: false
+    endpoint: http://webhook.foo.com/sd54qad89azd5a
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: Token123456
+    timeout: 10
+
+regopts:
+  someregistryoptions:
+    username: foo
+    password: bar
+    timeout: 20
+  onemore:
+    username: foo2
+    password: bar2
+    insecure_tls: true
+
+providers:
+  docker:
+    # Watch only labeled containers on local Docker engine
+    local:
+      watch_stopped: true
+    # Watch all containers on 10.0.0.1:2375
+    remote:
+      endpoint: tcp://10.0.0.1:2375
+      watch_by_default: true
+  swarm:
+    # Watch all services on local Swarm cluster
+    myswarm:
+      watch_by_default: true
+  static:
+    # Watch latest tag of crazymax/nextcloud image on docker.io (DockerHub) with registry ID 'someregistryoptions'.
+    - name: docker.io/crazymax/nextcloud:latest
+      regopts_id: someregistryoptions
+    # Watch 4.0.0 tag of jfrog/artifactory-oss image on frog-docker-reg2.bintray.io (Bintray) with registry ID 'onemore'.
+    - name: jfrog-docker-reg2.bintray.io/jfrog/artifactory-oss:4.0.0
+      regopts_id: onemore
+    # Watch coreos/hyperkube image on quay.io (Quay) and assume latest tag.
+    - name: quay.io/coreos/hyperkube
+    # Watch crazymax/swarm-cronjob image and assume docker.io registry and latest tag.
+    # Only include tags matching regexp ^1\.2\..*
+    - name: crazymax/swarm-cronjob
+      watch_repo: true
+      include_tags:
+        - ^1\.2\..*
+    # Watch portainer/portainer image on docker.io (DockerHub) and assume latest tag
+    # Only watch latest 10 tags and include tags matching regexp ^(0|[1-9]\d*)\..*
+    - name: docker.io/portainer/portainer
+      watch_repo: true
+      max_tags: 10
+      include_tags:
+        - ^(0|[1-9]\d*)\..*
+    # Watch alpine image (library) and assume docker.io registry and latest tag.
+    # Only check linux/arm64v8 image
+    - name: alpine
+      watch_repo: true
+      os: linux
+      arch: arm64v8

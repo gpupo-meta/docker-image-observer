@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+    diun:
+        image: crazymax/diun:latest
+        env_file:
+            - .env
+            - .env.local
+        volumes:
+            - $PWD/var/diun/data:/data
+            - $PWD/config/diun.yml:/diun.yml:ro
+        restart: always
+        networks:
+            - default
+networks:
+    default: ~
